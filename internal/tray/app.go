@@ -29,12 +29,13 @@ type Deps struct {
 }
 
 type App struct {
-	deps   Deps
-	mu     sync.Mutex
-	cfg    config.Config
-	cache  []core.Proxy
-	active string // applied proxy address
-	status string
+	deps       Deps
+	mu         sync.Mutex
+	cfg        config.Config
+	cache      []core.Proxy
+	active     string // applied proxy address
+	status     string
+	lastScanAt time.Time
 }
 
 func Run(deps Deps) {
@@ -50,6 +51,9 @@ func Run(deps Deps) {
 		deps:  deps,
 		cfg:   deps.Config,
 		cache: append([]core.Proxy(nil), deps.Cache...),
+	}
+	if info, err := os.Stat(deps.Store.CachePath()); err == nil && !info.ModTime().IsZero() {
+		app.lastScanAt = info.ModTime()
 	}
 	systray.Run(app.onReady, app.onExit)
 }
@@ -108,6 +112,7 @@ func (a *App) scanAndRefresh() {
 	}
 	a.mu.Lock()
 	a.cache = result
+	a.lastScanAt = time.Now()
 	a.mu.Unlock()
 	if err := a.deps.Store.SaveCache(result); err != nil {
 		a.deps.Log.Printf("save cache: %v", err)
@@ -138,6 +143,7 @@ func (a *App) rebuildMenu() {
 		active = a.deps.Proxy.Active()
 	}
 	scanning := a.deps.Scanner.IsScanning()
+	lastScan := a.lastScanAt
 	a.mu.Unlock()
 
 	systray.ResetMenu()
@@ -146,6 +152,15 @@ func (a *App) rebuildMenu() {
 	off.Click(func() { a.onOff() })
 
 	systray.AddSeparator()
+
+	updatedLabel := "Updated: never"
+	if scanning {
+		updatedLabel = "Updated: scanning…"
+	} else if !lastScan.IsZero() {
+		updatedLabel = "Updated: " + lastScan.Format("02.01.2006 15:04:05")
+	}
+	updatedItem := systray.AddMenuItem(updatedLabel, "Last successful proxy list refresh")
+	updatedItem.Disable()
 
 	items := core.MenuProxies(cache, cfg.Filters, menuTopN)
 	shown := map[string]bool{}

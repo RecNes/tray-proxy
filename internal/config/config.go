@@ -83,3 +83,5 @@ func (s Store) SaveCache(p []core.Proxy) error {
 }
 
 func (s Store) LogPath() string { return filepath.Join(s.Root, "proxytray.log") }
+
+func (s Store) CachePath() string { return filepath.Join(s.Root, "cache.json") }
