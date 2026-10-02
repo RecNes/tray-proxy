@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -150,9 +151,13 @@ func (a *App) rebuildMenu() {
 	shown := map[string]bool{}
 	for _, p := range items {
 		shown[p.Address()] = true
-		label := fmt.Sprintf("%s %s  %s  (%.1fs)", core.FlagEmoji(p.Code), p.Code, p.Address(), p.LatencyS)
+		code := strings.ToUpper(p.Code)
+		label := fmt.Sprintf("%s  %s  (%.1fs)", code, p.Address(), p.LatencyS)
 		checked := p.Address() == active
 		item := systray.AddMenuItemCheckbox(label, p.Country, checked)
+		if ico := flagIconICO(p.Code); len(ico) > 0 {
+			item.SetIcon(ico)
+		}
 		addr := p.Address()
 		item.Click(func() { a.onSelect(addr) })
 	}
@@ -168,9 +173,14 @@ func (a *App) rebuildMenu() {
 		}
 		label := "Active  " + active
 		if found {
-			label = fmt.Sprintf("%s %s  %s  (active)", core.FlagEmoji(orphan.Code), orphan.Code, orphan.Address())
+			label = fmt.Sprintf("%s  %s  (active)", strings.ToUpper(orphan.Code), orphan.Address())
 		}
 		item := systray.AddMenuItemCheckbox(label, "Currently applied", true)
+		if found {
+			if ico := flagIconICO(orphan.Code); len(ico) > 0 {
+				item.SetIcon(ico)
+			}
+		}
 		addr := active
 		item.Click(func() { a.onSelect(addr) })
 	}
