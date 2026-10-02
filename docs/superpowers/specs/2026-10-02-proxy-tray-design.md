@@ -122,7 +122,7 @@ Path: `%AppData%\proxytray\`
 
 ### Periodic scan (every 30 minutes)
 
-If not scanning: run full scrape → test → update cache → rebuild menu.
+If not scanning: scrape → test first 100 rows → update cache → rebuild menu.
 
 ### Manual Refresh
 
