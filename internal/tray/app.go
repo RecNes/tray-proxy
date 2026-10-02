@@ -167,11 +167,16 @@ func (a *App) rebuildMenu() {
 	for _, p := range items {
 		shown[p.Address()] = true
 		code := strings.ToUpper(p.Code)
-		label := fmt.Sprintf("%s  %s  (%.1fs)", code, p.Address(), p.LatencyS)
 		checked := p.Address() == active
+		label := formatProxyLabel(code, p.Address(), p.LatencyS, checked)
 		item := systray.AddMenuItemCheckbox(label, p.Country, checked)
 		if ico := flagIconICO(p.Code); len(ico) > 0 {
 			item.SetIcon(ico)
+		}
+		if checked {
+			item.Check()
+		} else {
+			item.Uncheck()
 		}
 		addr := p.Address()
 		item.Click(func() { a.onSelect(addr) })
@@ -186,9 +191,9 @@ func (a *App) rebuildMenu() {
 				break
 			}
 		}
-		label := "Active  " + active
+		label := "✓ Active  " + active
 		if found {
-			label = fmt.Sprintf("%s  %s  (active)", strings.ToUpper(orphan.Code), orphan.Address())
+			label = fmt.Sprintf("✓ %s  %s  (active)", strings.ToUpper(orphan.Code), orphan.Address())
 		}
 		item := systray.AddMenuItemCheckbox(label, "Currently applied", true)
 		if found {
@@ -196,6 +201,7 @@ func (a *App) rebuildMenu() {
 				item.SetIcon(ico)
 			}
 		}
+		item.Check()
 		addr := active
 		item.Click(func() { a.onSelect(addr) })
 	}
@@ -301,4 +307,15 @@ func (a *App) toggleStartWithWindows() {
 		a.deps.Log.Printf("save config: %v", err)
 	}
 	a.rebuildMenu()
+}
+
+// formatProxyLabel prefixes the selected proxy with a visible tick.
+// Windows menu bitmaps (flag icons) occupy the native checkmark column,
+// so we mirror Off's selection cue in the title text.
+func formatProxyLabel(code, addr string, latency float64, selected bool) string {
+	body := fmt.Sprintf("%s  %s  (%.1fs)", code, addr, latency)
+	if selected {
+		return "✓ " + body
+	}
+	return "    " + body
 }
