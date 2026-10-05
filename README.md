@@ -27,6 +27,35 @@ go build -o trayproxy.exe ./cmd/trayproxy
 .\trayproxy.exe
 ```
 
+> Dev notu: yukaridaki komut konsollu (console-subsystem) exe uretir; log/panic ekranda gorunur.
+> Son kullaniciya dagitilan konsolsuz exe `scripts/build-installer.ps1` ile `-H=windowsgui`
+> ldflag'iyle uretilir. Tum loglar `%AppData%\trayproxy\` altindaki dosyaya yazildigi icin
+> konsol kalkinca tani kaybi olmaz.
+
+## App icon (`assets/logo.png`)
+
+Single source of truth is `assets/logo.png` (square, committed). The
+multi-size `assets/trayproxy.ico` (16–256px, committed) is generated from
+it and shared by the exe file icon, the installer and the systray icon:
+
+```powershell
+go run ./tools/icongen
+```
+
+- Exe file icon: `scripts/build-installer.ps1` embeds the `.ico` at link
+  time via pinned `akavel/rsrc` (`cmd/trayproxy/rsrc_windows_amd64.syso`,
+  git-ignored, regenerated every build) — Explorer, taskbar, Start
+  Menu/Desktop shortcuts and the uninstall entry show the logo.
+- Installer: `installer/trayproxy.iss` uses it as `SetupIconFile` and
+  copies it to `{app}` for shortcut `IconFilename`s, including the
+  optional desktop shortcut (`desktopicon` task).
+- Systray: `internal/tray/icon.go` embeds the same `.ico` via the
+  `assets` package (`systray.SetIcon`).
+
+Dev builds (`go run` / plain `go build`) show the systray logo but keep
+the default exe file icon; the file icon only comes from the
+rsrc-enabled installer build.
+
 ## Build installer (local)
 
 ```powershell

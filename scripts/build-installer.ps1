@@ -24,6 +24,33 @@ $Dist = Join-Path $Root "dist"
 $Iss = Join-Path $Root "installer\trayproxy.iss"
 $ExeOut = Join-Path $Dist "trayproxy.exe"
 $SetupOut = Join-Path $Dist "TrayProxy-Setup-$Version.exe"
+$IconSrc = Join-Path $Root "assets\trayproxy.ico"
+$RsrcVersion = "v0.10.2"
+
+function Find-Rsrc {
+  $cmd = Get-Command rsrc.exe -ErrorAction SilentlyContinue
+  if ($cmd -and $cmd.Source) { return $cmd.Source }
+  $bin = Join-Path $Root ".tools\rsrc.exe"
+  if (Test-Path -LiteralPath $bin) { return $bin }
+  return $null
+}
+
+function Install-Rsrc {
+  # Pinned akavel/rsrc: embeds the .ico as the exe file icon at link time.
+  $bin = Join-Path $Root ".tools\rsrc.exe"
+  New-Item -ItemType Directory -Force -Path (Split-Path $bin) | Out-Null
+  Write-Host "==> installing rsrc $RsrcVersion"
+  & go install "github.com/akavel/rsrc@$RsrcVersion"
+  if ($LASTEXITCODE -ne 0) { throw "go install rsrc failed" }
+  $gobin = & go env GOBIN
+  if ([string]::IsNullOrWhiteSpace($gobin)) {
+    $gobin = Join-Path (& go env GOPATH) "bin"
+  }
+  $built = Join-Path $gobin "rsrc.exe"
+  if (-not (Test-Path -LiteralPath $built)) { throw "rsrc.exe not found after install: $built" }
+  Copy-Item -Force $built $bin
+  return $bin
+}
 
 function Find-ISCC {
   $paths = New-Object System.Collections.Generic.List[string]
@@ -87,7 +114,23 @@ try {
   if ($LASTEXITCODE -ne 0) { throw "go test failed" }
 
   Write-Host "==> go build -> $ExeOut"
-  $ldflags = "-X main.version=$Version"
+  if (-not (Test-Path -LiteralPath $IconSrc)) {
+    throw "Missing app icon: $IconSrc (run: go run ./tools/icongen)"
+  }
+  $rsrc = Find-Rsrc
+  if (-not $rsrc) { $rsrc = Install-Rsrc }
+  # rsrc_windows_amd64.syso next to cmd/trayproxy/main.go is picked up by
+  # `go build` automatically and becomes the exe file icon (Explorer,
+  # Start Menu/Desktop shortcuts, uninstall entry). Stale .syso removed
+  # first so the icon can never lag behind assets/trayproxy.ico.
+  $SysoOut = Join-Path $Root "cmd\trayproxy\rsrc_windows_amd64.syso"
+  if (Test-Path -LiteralPath $SysoOut) { Remove-Item -Force $SysoOut }
+  & $rsrc -arch amd64 -ico $IconSrc -o $SysoOut
+  if ($LASTEXITCODE -ne 0) { throw "rsrc failed" }
+  # -H=windowsgui: build a GUI-subsystem exe so Windows starts the tray app
+  # without allocating a console window. Dev builds via `go run` / plain
+  # `go build` stay console-subsystem on purpose for visible logs/panics.
+  $ldflags = "-H=windowsgui -X main.version=$Version"
   & go build -ldflags $ldflags -o $ExeOut ./cmd/trayproxy
   if ($LASTEXITCODE -ne 0) { throw "go build failed" }
 

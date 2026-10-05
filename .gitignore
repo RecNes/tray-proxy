@@ -3,4 +3,6 @@
 *.exe~
 dist/
 internal/tray/icon.ico
+cmd/trayproxy/*.syso
+.tools/
 docs/
