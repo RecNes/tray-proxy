@@ -1,5 +1,5 @@
 .superpowers/
 *.exe
-
-
+*.exe~
+dist/
 internal/tray/icon.ico
