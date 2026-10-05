@@ -5,10 +5,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"proxy-tray/internal/config"
-	"proxy-tray/internal/core"
-	"proxy-tray/internal/proxyos"
-	"proxy-tray/internal/tray"
+	"tray-proxy/internal/config"
+	"tray-proxy/internal/core"
+	"tray-proxy/internal/proxyos"
+	"tray-proxy/internal/tray"
 )
 
 // Set via: go build -ldflags "-X main.version=0.1.0"
@@ -24,7 +24,7 @@ func main() {
 	}
 	defer logFile.Close()
 	logger := log.New(logFile, "", log.LstdFlags)
-	logger.Printf("proxytray starting version=%s", version)
+	logger.Printf("trayproxy starting version=%s", version)
 
 	cfg, err := store.Load()
 	if err != nil {

@@ -11,9 +11,9 @@ import (
 
 	"github.com/energye/systray"
 
-	"proxy-tray/internal/config"
-	"proxy-tray/internal/core"
-	"proxy-tray/internal/proxyos"
+	"tray-proxy/internal/config"
+	"tray-proxy/internal/core"
+	"tray-proxy/internal/proxyos"
 )
 
 const menuTopN = 10
@@ -60,8 +60,8 @@ func Run(deps Deps) {
 
 func (a *App) onReady() {
 	systray.SetIcon(iconData)
-	systray.SetTitle("Proxy Tray")
-	systray.SetTooltip("Proxy Tray")
+	systray.SetTitle("Tray Proxy")
+	systray.SetTooltip("Tray Proxy")
 	systray.SetOnClick(func(menu systray.IMenu) {
 		if menu != nil {
 			menu.ShowMenu()
@@ -125,7 +125,7 @@ func (a *App) setStatus(s string) {
 	a.mu.Lock()
 	a.status = s
 	a.mu.Unlock()
-	tip := "Proxy Tray"
+	tip := "Tray Proxy"
 	if s != "" {
 		tip = s
 	} else if a.deps.Proxy.IsApplied() {

@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Build Proxy Tray Windows installer (Go binary + Inno Setup).
+  Build Tray Proxy Windows installer (Go binary + Inno Setup).
 
 .PARAMETER Version
   Semver without leading v (e.g. 0.1.0). Used for artifact name and AppVersion.
@@ -23,7 +23,7 @@ $Root = Resolve-Path (Join-Path $PSScriptRoot "..")
 $Dist = Join-Path $Root "dist"
 $Iss = Join-Path $Root "installer\proxytray.iss"
 $ExeOut = Join-Path $Dist "proxytray.exe"
-$SetupOut = Join-Path $Dist "ProxyTray-Setup-$Version.exe"
+$SetupOut = Join-Path $Dist "TrayProxy-Setup-$Version.exe"
 
 function Find-ISCC {
   $paths = New-Object System.Collections.Generic.List[string]
@@ -88,7 +88,7 @@ try {
 
   Write-Host "==> go build -> $ExeOut"
   $ldflags = "-X main.version=$Version"
-  & go build -ldflags $ldflags -o $ExeOut ./cmd/proxytray
+  & go build -ldflags $ldflags -o $ExeOut ./cmd/trayproxy
   if ($LASTEXITCODE -ne 0) { throw "go build failed" }
 
   Invoke-OptionalSign $ExeOut

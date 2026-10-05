@@ -1,4 +1,4 @@
-# Proxy Tray
+# Tray Proxy
 
 Windows system-tray app that fetches free proxies from [free-proxy-list.net](https://free-proxy-list.net/), tests them, and lets you apply/clear an OS-wide proxy.
 
@@ -10,9 +10,9 @@ Windows system-tray app that fetches free proxies from [free-proxy-list.net](htt
 
 ## Install (end users)
 
-1. Download `ProxyTray-Setup-x.y.z.exe` from this repo’s **GitHub Releases** (personal account).
+1. Download `TrayProxy-Setup-x.y.z.exe` from this repo’s **GitHub Releases** (personal account).
 2. Run the setup and choose **current user** or **all users**.
-3. Finish with **Launch Proxy Tray** checked (default) to start the tray app.
+3. Finish with **Launch Tray Proxy ** checked (default) to start the tray app.
 
 Uninstall removes the program files and Start Menu shortcut.  
 `%AppData%\proxytray` (config, cache, logs) is **kept** on purpose.
@@ -32,7 +32,7 @@ go build -o proxytray.exe ./cmd/proxytray
 ```powershell
 # Requires Go + Inno Setup 6 (ISCC.exe)
 .\scripts\build-installer.ps1 -Version 0.1.0
-# Output: dist\ProxyTray-Setup-0.1.0.exe
+# Output: dist\TrayProxy-Setup-0.1.0.exe
 ```
 
 Optional code signing (skipped if unset):
@@ -66,7 +66,7 @@ Optional repo secrets: `SIGN_CERT_BASE64`, `SIGN_CERT_PASSWORD`.
 - **Quit** — restores proxy settings, then exits
 
 Automatic refresh runs every 30 minutes.  
-Config/cache/logs: `%AppData%\proxytray\`
+Config/cache/logs: `%AppData%\trayproxy\`
 
 ## Tests
 

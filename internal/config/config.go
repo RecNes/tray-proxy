@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"proxy-tray/internal/core"
+	"tray-proxy/internal/core"
 )
 
 type Config struct {
@@ -20,10 +20,10 @@ func Default() Config {
 type Store struct{ Root string }
 
 func DefaultStore() Store {
-	root := filepath.Join(os.Getenv("APPDATA"), "proxytray")
+	root := filepath.Join(os.Getenv("APPDATA"), "trayproxy")
 	if os.Getenv("APPDATA") == "" {
 		home, _ := os.UserHomeDir()
-		root = filepath.Join(home, ".proxytray")
+		root = filepath.Join(home, ".trayproxy")
 	}
 	return Store{Root: root}
 }
@@ -82,6 +82,6 @@ func (s Store) SaveCache(p []core.Proxy) error {
 	return os.WriteFile(filepath.Join(s.Root, "cache.json"), b, 0o644)
 }
 
-func (s Store) LogPath() string { return filepath.Join(s.Root, "proxytray.log") }
+func (s Store) LogPath() string { return filepath.Join(s.Root, "trayproxy.log") }
 
 func (s Store) CachePath() string { return filepath.Join(s.Root, "cache.json") }

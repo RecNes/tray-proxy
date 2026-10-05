@@ -3,7 +3,7 @@ package config
 import (
 	"testing"
 
-	"proxy-tray/internal/core"
+	"tray-proxy/internal/core"
 )
 
 func TestSaveLoadRoundTrip(t *testing.T) {

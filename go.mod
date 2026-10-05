@@ -1,4 +1,4 @@
-module proxy-tray
+module tray-proxy
 
 go 1.27.0
 

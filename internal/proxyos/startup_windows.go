@@ -11,7 +11,7 @@ import (
 )
 
 const runKeyPath = `Software\Microsoft\Windows\CurrentVersion\Run`
-const runValueName = "ProxyTray"
+const runValueName = "TrayProxy"
 
 func EnableStartWithWindows(exePath string) error {
 	if exePath == "" {

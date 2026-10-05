@@ -44,7 +44,7 @@ jobs:
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/ProxyTray-Setup-${{ steps.ver.outputs.version }}.exe
+          files: dist/TrayProxy-Setup-${{ steps.ver.outputs.version }}.exe
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
