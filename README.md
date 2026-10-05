@@ -15,16 +15,16 @@ Windows system-tray app that fetches free proxies from [free-proxy-list.net](htt
 3. Finish with **Launch Tray Proxy ** checked (default) to start the tray app.
 
 Uninstall removes the program files and Start Menu shortcut.  
-`%AppData%\proxytray` (config, cache, logs) is **kept** on purpose.
+`%AppData%\trayproxy` (config, cache, logs) is **kept** on purpose.
 
 ## Build from source
 
 ```powershell
 $env:Path = "C:\Program Files\Go\bin;" + $env:Path
-cd proxy-tray
+cd tray-proxy
 go mod tidy
-go build -o proxytray.exe ./cmd/proxytray
-.\proxytray.exe
+go build -o trayproxy.exe ./cmd/trayproxy
+.\trayproxy.exe
 ```
 
 ## Build installer (local)

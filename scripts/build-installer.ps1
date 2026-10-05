@@ -21,8 +21,8 @@ $ErrorActionPreference = "Stop"
 
 $Root = Resolve-Path (Join-Path $PSScriptRoot "..")
 $Dist = Join-Path $Root "dist"
-$Iss = Join-Path $Root "installer\proxytray.iss"
-$ExeOut = Join-Path $Dist "proxytray.exe"
+$Iss = Join-Path $Root "installer\trayproxy.iss"
+$ExeOut = Join-Path $Dist "trayproxy.exe"
 $SetupOut = Join-Path $Dist "TrayProxy-Setup-$Version.exe"
 
 function Find-ISCC {
