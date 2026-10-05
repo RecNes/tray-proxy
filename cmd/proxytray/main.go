@@ -11,6 +11,9 @@ import (
 	"proxy-tray/internal/tray"
 )
 
+// Set via: go build -ldflags "-X main.version=0.1.0"
+var version = "dev"
+
 func main() {
 	store := config.DefaultStore()
 	_ = os.MkdirAll(store.Root, 0o755)
@@ -21,6 +24,7 @@ func main() {
 	}
 	defer logFile.Close()
 	logger := log.New(logFile, "", log.LstdFlags)
+	logger.Printf("proxytray starting version=%s", version)
 
 	cfg, err := store.Load()
 	if err != nil {
